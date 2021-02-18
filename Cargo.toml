@@ -1,0 +1,11 @@
+[package]
+name = "git-repo"
+version = "0.1.0"
+authors = ["Nathan Henrie <nate@n8henrie.com>"]
+edition = "2018"
+description = "Git subcommand to open current repo in the web browser"
+license = "MIT"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
