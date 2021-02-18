@@ -119,7 +119,8 @@ origin  git@github.com:n8henrie/git-repo.git (push)";
             "git@github.com:n8henrie/git-repo.git",
         ]
         .iter()
-        .map(|&x| String::from(x))
+        .cloned()
+        .map(String::from)
         .collect();
         assert_eq!(urls_from_output(input), output)
     }
