@@ -5,13 +5,12 @@ use std::process::{Command, ExitStatus};
 
 type Result<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
-fn select_from_list<T, U>(choices: T) -> Result<U>
+fn select_from_list<T, U>(choices: &mut T) -> Result<U>
 where
-    T: std::iter::IntoIterator<Item = U>,
+    T: std::iter::Iterator<Item = U>,
     U: AsRef<str>,
 {
-    let mut choices: Vec<_> = choices.into_iter().collect();
-    for (idx, choice) in choices.iter().enumerate() {
+    for (idx, choice) in choices.by_ref().enumerate() {
         println!("{}: {}", idx, choice.as_ref());
     }
     let mut input = String::new();
@@ -21,12 +20,12 @@ where
         io::stdin().read_line(&mut input)?;
         match input.trim().parse::<usize>() {
             Ok(num) => {
-                if choices.get(num).is_some() {
-                    return Ok(choices.remove(num));
+                if let Some(choice) = choices.by_ref().nth(num) {
+                    return Ok(choice);
                 }
             }
             Err(e) => {
-                eprintln!("{}", e);
+                writeln!(io::stderr(), "{}", e)?;
             }
         }
         input.clear();
@@ -38,7 +37,7 @@ fn choose_remote_url<T: AsRef<str>>(urls: &HashSet<T>) -> Result<&str> {
         0 => Err("No URL found".into()),
         1 => Ok(urls.iter().next().unwrap().as_ref()),
         _ => {
-            let url = select_from_list(urls)?;
+            let url = select_from_list(&mut urls.iter())?;
             Ok(url.as_ref())
         }
     }
